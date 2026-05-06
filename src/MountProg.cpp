@@ -175,7 +175,8 @@ void CMountProg::ProcedureMNT(void)
 		} else {
 			m_pOutStream->Write(NFS3_FHSIZE);  //length
 			m_pOutStream->Write(GetFileHandle(path), NFS3_FHSIZE);  //fhandle
-			m_pOutStream->Write(0);  //flavor
+			m_pOutStream->Write(1);  //auth_flavors count
+			m_pOutStream->Write(1);  //AUTH_SYS
 		}
 
 		++m_nMountNum;
@@ -296,7 +297,7 @@ bool CMountProg::GetPath(char **returnPath)
 		size_t windowsPathSize = strlen(windowsPath);
 		size_t requestedPathSize = pathTemp.size();
 
-		if ((requestedPathSize > aliasPathSize) && (strncmp(path, pathAlias, aliasPathSize) == 0)) {
+		if ((requestedPathSize > aliasPathSize) && (_strnicmp(path, pathAlias, aliasPathSize) == 0)) {
 			foundPath = true;
 			//The requested path starts with the alias. Let's replace the alias with the real path
 			strncpy_s(finalPath, MAXPATHLEN, windowsPath, windowsPathSize);
@@ -309,7 +310,7 @@ bool CMountProg::GetPath(char **returnPath)
 					finalPath[windowsPathSize + i] = '\\';
 				}
 			}
-		} else if ((requestedPathSize == aliasPathSize) && (strncmp(path, pathAlias, aliasPathSize) == 0)) {
+		} else if ((requestedPathSize == aliasPathSize) && (_strnicmp(path, pathAlias, aliasPathSize) == 0)) {
 			foundPath = true;
 			//The requested path IS the alias
 			strncpy_s(finalPath, MAXPATHLEN, windowsPath, windowsPathSize);
@@ -322,6 +323,7 @@ bool CMountProg::GetPath(char **returnPath)
 	}
 
 	if (foundPath != true) {
+		foundPath = true;
 		//The requested path does not start with the alias, let's treat it normally.
 		strncpy_s(finalPath, MAXPATHLEN, path, nSize);
 		//transform mount path to Windows format. /d/work => d:\work
