@@ -7,7 +7,7 @@
 
 bool load_data(opaque &data, bool &eof, count3 &dataLength, offset3 offset, count3 readLength, std::string path)
 {
-    FILE *pFile = _fsopen(path.c_str(), "rb", _SH_DENYWR);
+    FILE *pFile = _fsopen(path.c_str(), "rb", _SH_DENYNO);
 
     if (pFile == NULL) {
         return false;
